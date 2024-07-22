@@ -27,7 +27,7 @@ function terbilang($number) {
 
 function satuan($number) {
     switch ($number) {
-		case 1:
+        case 1:
             return 'Satu';
         case 2:
             return 'Dua';
@@ -57,10 +57,10 @@ function satuan($number) {
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $number = $_POST['number'];
     $number = str_replace(',', '.', str_replace('.', '', $number)); // Mengubah format angka
-    if (is_numeric($number) && $number >= 0 && $number <= pow(10, 33)) { // Batas hingga Puluhan Triliun
-        echo terbilang($number) . " Rupiah";
+    if (is_numeric($number) && $number >= 0 && $number <= pow(10, 18)) { // Batas hingga Puluhan Triliun
+        echo '(' . terbilang($number) . ' Rupiah)';
     } else {
-        echo "Masukkan angka yang valid antara 0 dan 10^33.";
+        echo "Masukkan angka yang valid antara 0 dan 10^18.";
     }
 }
 ?>
