@@ -1,4 +1,29 @@
 <?php
+require 'C:/xampp/phpMyAdmin/vendor/autoload.php';
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_FILES["excelFile"])) {
+    $file = $_FILES["excelFile"]["tmp_name"];
+    $spreadsheet = IOFactory::load($file);
+    $sheet = $spreadsheet->getActiveSheet();
+
+    $highestRow = $sheet->getHighestRow();
+    for ($row = 1; $row <= $highestRow; $row++) {
+        $number = $sheet->getCellByColumnAndRow(1, $row)->getValue();
+        if (is_numeric($number)) {
+            $terbilang = terbilang($number);
+            $sheet->setCellValueByColumnAndRow(2, $row, $terbilang . ' Rupiah');
+        }
+    }
+
+    $writer = new Xlsx($spreadsheet);
+    $outputFile = 'output.xlsx';
+    $writer->save($outputFile);
+
+    echo '<a href="'.$outputFile.'" class="btn btn-success">Download Hasil</a>';
+}
 
 function terbilang($number) {
     $number = (float)$number;
@@ -54,13 +79,4 @@ function satuan($number) {
             return '';
     }
 }
-
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $number = $_POST['number'];
-    $number = str_replace(',', '.', str_replace('.', '', $number)); // Mengubah format angka
-    if (is_numeric($number) && $number >= 0 && $number <= pow(10, 18)) { // Batas hingga Puluhan Triliun
-        echo '(' . terbilang($number) . ' Rupiah)';
-    } else {
-        echo "Masukkan angka yang valid antara 0 dan 10^18.";
-    }
-}
+?>
